@@ -1,4 +1,4 @@
-// AIN Days 클라우드 v2: 구글 로그인 + 실시간 동기화 (Firebase Auth + Firestore) — AIN Cost와 같은 방식
+// AIN Days 클라우드 v3: 구글 로그인 + 실시간 동기화 (Firebase Auth + Firestore) — AIN Cost와 같은 방식
 //  - 클라우드 위치: users/{uid} 문서(설정) + users/{uid}/habits/{습관 id} 문서 하나씩 (이름, 색, 시작한 날, 보관, 순서, 체크한 날)
 //  - 습관을 하나씩 따로 저장해서, 폰과 PC에서 서로 다른 습관을 체크해도 덮어쓰지 않음
 //  - 다른 기기에서 바꾸면 onSnapshot으로 바로 받아서 화면을 다시 그림
@@ -164,6 +164,8 @@ function onUserSnap(snap) {
 }
 
 function onHabitsSnap(snap) {
+  // 이 기기에서 방금 저장한 내용이 되돌아온 것이면 화면은 다시 그리지 않음 (체크 애니메이션이 끊기지 않게)
+  const echo = cloud.ready && snap.metadata.hasPendingWrites;
   const habits = [];
   cloud.shadowHabits = new Map();
   snap.forEach(doc => {
@@ -181,14 +183,14 @@ function onHabitsSnap(snap) {
   }
   state.habits = habits;
   cloud.gotHabits = true;
-  afterSnapshot(merged);
+  afterSnapshot(merged, echo);
 }
 
-function afterSnapshot(merged) {
+function afterSnapshot(merged, echo) {
   if (cloud.gotUser && cloud.gotHabits) cloud.ready = true;
   saveLocal();
   if (merged) cloudSave();
-  refreshViews();
+  if (!echo) refreshViews();
 }
 
 // 다른 기기에서 바뀐 내용을 화면에 반영 (끄는 중이거나 입력 중인 곳은 건드리지 않음)

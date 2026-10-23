@@ -1,4 +1,4 @@
-/* AIN Days 스타일 v1 — 색·크기는 ../ain-todo/plan/design-guide.md(공통 디자인 가이드)를 따른다. 기본 틀은 AIN Cost와 같음 */
+/* AIN Days 스타일 v2 — 색·크기는 ../ain-todo/plan/design-guide.md(공통 디자인 가이드)를 따른다. 기본 틀은 AIN Cost와 같음 */
 
 :root {
   --bg: #F2F2F7;
@@ -173,6 +173,8 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 :root:not([data-theme="dark"]) .habit[data-c="brown"] .check svg { color: #000000; }
 .habit.dragging { position: relative; z-index: 1; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); }
 .habit.dragging .h-open { background: var(--fill); }
+/* 끄는 동안: 다른 줄은 미끄러지듯 비켜 주고, 손을 떼면 잡은 줄이 제자리에 내려앉음 */
+.list.sorting .habit:not(.dragging), .habit.dragging.settle { transition: transform .2s ease; }
 .add-row, .arch-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; padding: 0 16px; text-align: left; }
 .add-row { color: var(--primary-text); gap: 8px; }
 .list .habit + .add-row { border-top: 0.5px solid var(--line); }

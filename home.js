@@ -1,4 +1,4 @@
-// AIN Days 오늘 화면 v1: 이번 주 날짜 줄, 습관 목록(체크·연속), 꾹 눌러 끌어서 순서 바꾸기
+// AIN Days 오늘 화면 v2: 이번 주 날짜 줄, 습관 목록(체크·연속), 꾹 눌러 끌어서 순서 바꾸기
 
 function homeHtml() {
   const today = parseYmd(ui.today);
@@ -51,6 +51,7 @@ function checkFromHome(id) {
 
 // ---------- 꾹 눌러(0.45초) 끌어서 순서 바꾸기 ----------
 // 누르기 전에 손가락이 움직이면 스크롤로 봄
+// 잡은 줄은 손가락을 따라 움직이고, 다른 줄은 미끄러지듯 비켜 줌 (손을 뗄 때까지 순서는 그대로 두고 위치만 옮겨 보임)
 let drag = null;
 let skipClick = false;
 
@@ -62,6 +63,11 @@ appEl.addEventListener('pointerdown', e => {
   drag.timer = setTimeout(() => {
     if (!drag) return;
     drag.on = true;
+    drag.rows = [...drag.list.querySelectorAll('.habit')];
+    drag.from = drag.to = drag.rows.indexOf(row);
+    drag.tops = drag.rows.map(r => r.offsetTop);
+    drag.hs = drag.rows.map(r => r.offsetHeight);
+    drag.list.classList.add('sorting');
     row.classList.add('dragging');
     if (navigator.vibrate) navigator.vibrate(10);
   }, 450);
@@ -72,10 +78,23 @@ document.addEventListener('pointermove', e => {
     if (Math.abs(e.clientY - drag.y) > 8) { clearTimeout(drag.timer); drag = null; }
     return;
   }
-  const others = [...drag.list.querySelectorAll('.habit')].filter(r => r !== drag.row);
-  const target = others.find(r => { const b = r.getBoundingClientRect(); return e.clientY < b.top + b.height / 2; });
-  const place = target || drag.list.querySelector('.add-row');
-  if (drag.row.nextElementSibling !== place) drag.list.insertBefore(drag.row, place);
+  const { rows, from, tops, hs } = drag;
+  const last = rows.length - 1;
+  // 목록 맨 위·맨 아래 밖으로는 못 나가게
+  const dy = Math.max(tops[0] - tops[from], Math.min(tops[last] - tops[from], e.clientY - drag.y));
+  drag.row.style.transform = `translateY(${dy}px)`;
+  // 잡은 줄의 가운데가 다른 줄의 가운데를 넘으면 그 줄이 비켜 줌
+  const mid = tops[from] + hs[from] / 2 + dy;
+  let to = from;
+  rows.forEach((r, k) => {
+    if (k === from) return;
+    const m = tops[k] + hs[k] / 2;
+    let shift = 0;
+    if (k < from && mid < m) { shift = hs[from]; to--; }
+    if (k > from && mid > m) { shift = -hs[from]; to++; }
+    r.style.transform = shift ? `translateY(${shift}px)` : '';
+  });
+  drag.to = to;
 });
 // 끄는 동안 화면이 스크롤되지 않게
 document.addEventListener('touchmove', e => { if (drag && drag.on) e.preventDefault(); }, { passive: false });
@@ -86,13 +105,21 @@ function endDrag() {
   const was = drag;
   drag = null;
   if (!was.on) return;
-  const order = [...was.list.querySelectorAll('.habit')].map(r => findHabit(r.dataset.id));
-  const rest = state.habits.filter(h => !order.includes(h)); // 보관한 습관은 뒤에 그대로
-  state.habits = [...order, ...rest];
   skipClick = true;
   setTimeout(() => { skipClick = false; }, 400);
-  saveState();
-  render();
+  // 잡은 줄을 새 자리로 부드럽게 내려놓은 뒤 순서를 저장하고 다시 그림
+  const { rows, from, to, tops, hs, row } = was;
+  const y = to > from ? tops[to] + hs[to] - hs[from] - tops[from] : tops[to] - tops[from];
+  row.classList.add('settle');
+  row.style.transform = `translateY(${y}px)`;
+  setTimeout(() => {
+    const order = rows.map(r => findHabit(r.dataset.id));
+    order.splice(to, 0, order.splice(from, 1)[0]);
+    const rest = state.habits.filter(h => !order.includes(h)); // 보관한 습관은 뒤에 그대로
+    state.habits = [...order, ...rest];
+    saveState();
+    render();
+  }, 200);
 }
 document.addEventListener('pointerup', endDrag);
 document.addEventListener('pointercancel', endDrag);
