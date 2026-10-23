@@ -1,4 +1,4 @@
-// AIN Days 습관 추가·편집 창 v1 (이름, 색, 보관, 삭제) + 선택 창(삭제·로그아웃 확인)
+// AIN Days 습관 추가·편집 창 v2 (이름, 색, 보관, 삭제) + 선택 창(삭제·로그아웃 확인)
 
 const habitOverlay = document.getElementById('habitOverlay');
 const fName = document.getElementById('fName');
@@ -31,7 +31,18 @@ function openHabitSheet(id) {
   renderColors();
   updateSaveBtn();
   showOverlay(habitOverlay);
-  if (!h) setTimeout(() => fName.focus(), 320);
+  // 아이폰은 누르는 순간에 커서를 넣어야 키보드를 열어 줌 (조금 뒤에 넣으면 무시됨)
+  if (!h) { fName.focus(); settleCaret(fName); }
+}
+
+// 아이폰 Safari: 올라오는 중인 칸에 커서를 넣으면 깜빡이는 커서가 처음 자리(창 뒤)에 남을 때가 있어서,
+// 창이 다 올라온 뒤 커서 위치를 한 번 더 잡아 줌 (키보드는 누르는 순간 넣어야 열리므로 그때 한 번, 지금 한 번)
+function settleCaret(el) {
+  setTimeout(() => {
+    if (document.activeElement !== el) return;
+    const n = el.value.length;
+    try { el.setSelectionRange(n, n); } catch (e) {}
+  }, 320);
 }
 
 function renderColors() {
