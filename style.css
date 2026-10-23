@@ -1,0 +1,406 @@
+/* AIN Days 스타일 v1 — 색·크기는 ../ain-todo/plan/design-guide.md(공통 디자인 가이드)를 따른다. 기본 틀은 AIN Cost와 같음 */
+
+:root {
+  --bg: #F2F2F7;
+  --card: #FFFFFF;
+  --fill: #E5E5EA;
+  --fg: #000000;
+  --sub: #6E6E73;
+  --line: #C6C6C8;
+  --seg-active: #FFFFFF;
+  --splash-bg: #FFFFFF;
+  --primary: #0071E3;
+  --on-primary: #FFFFFF;
+  --primary-text: #0066CC;
+  --on-habit: #FFFFFF; /* 습관 색으로 채운 체크 동그라미 위 체크 표시 */
+
+  --c-blue: #007AFF;
+  --c-green: #28A745;
+  --c-orange: #E06A00;
+  --c-red: #D70015;
+  --c-purple: #8944AB;
+  --c-pink: #E85D9E;
+  --c-teal: #0097A7;
+  --c-brown: #E5B800; /* brown 이름표 = 노랑 (예전 기록과 호환). 라이트 초록·노랑은 사용자가 밝게 고른 색 (가이드 예외) */
+
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", sans-serif;
+  color-scheme: light;
+}
+
+/* 다크: 화면 모드가 '자동'이고 아이폰이 다크일 때, 또는 '다크'를 골랐을 때 (두 블록 값은 같게 유지) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000;
+    --card: #1C1C1E;
+    --fill: #2C2C2E;
+    --fg: #FFFFFF;
+    --sub: #98989D;
+    --line: #38383A;
+    --seg-active: #636366;
+    --splash-bg: #000000;
+    --primary-text: #409CFF;
+    --on-habit: #000000;
+
+    --c-blue: #0A84FF;
+    --c-green: #30D158;
+    --c-orange: #FF9F0A;
+    --c-red: #FF453A;
+    --c-purple: #BF5AF2;
+    --c-pink: #FF9CC4;
+    --c-teal: #40C8E0;
+    --c-brown: #FFD60A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000;
+  --card: #1C1C1E;
+  --fill: #2C2C2E;
+  --fg: #FFFFFF;
+  --sub: #98989D;
+  --line: #38383A;
+  --seg-active: #636366;
+  --splash-bg: #000000;
+  --primary-text: #409CFF;
+  --on-habit: #000000;
+
+  --c-blue: #0A84FF;
+  --c-green: #30D158;
+  --c-orange: #FF9F0A;
+  --c-red: #FF453A;
+  --c-purple: #BF5AF2;
+  --c-pink: #FF9CC4;
+  --c-teal: #40C8E0;
+  --c-brown: #FFD60A;
+  color-scheme: dark;
+}
+
+/* 테마 색 (설정에서 고름, 계정마다 기억): 블루(기본) · 그린(팬톤 7481 C) · 레드
+   - 버튼·선택한 날짜는 --primary, 흰 바탕 위 작은 글씨·아이콘은 --primary-text
+   - 그린 버튼의 흰 글씨는 대비 2.66으로 기준(4.5)보다 낮음: 사용자가 고른 색이라 예외 (디자인 가이드 참고) */
+:root[data-accent="green"] { --primary: #00B74F; --primary-text: #007B33; }
+:root[data-accent="red"] { --primary: #D31E3D; --primary-text: #D31E3D; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-accent="green"] { --primary-text: #00B74F; }
+  :root:not([data-theme="light"])[data-accent="red"] { --primary-text: #FF4048; }
+}
+:root[data-theme="dark"][data-accent="green"] { --primary-text: #00B74F; }
+:root[data-theme="dark"][data-accent="red"] { --primary-text: #FF4048; }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.4;
+  -webkit-tap-highlight-color: transparent;
+}
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--primary-text); outline-offset: 2px; border-radius: 8px; }
+button:disabled { cursor: default; }
+svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+[hidden] { display: none !important; }
+.num { font-variant-numeric: tabular-nums; }
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* ---------- 헤더 ---------- */
+/* 맨 위에 고정: 상태 표시줄 아래까지 바탕색으로 덮어서, 홈 화면 앱에서 아이폰이 뿌연 효과를 깔지 않게 (AIN Todo에서 확인한 방법) */
+.top {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 6px 4px 16px;
+  background: var(--bg);
+}
+.wordmark { margin: 0; font-size: 20px; font-weight: 400; letter-spacing: -0.01em; color: var(--sub); }
+.wordmark b { font-weight: 800; color: var(--fg); }
+.top-right { margin-left: auto; display: flex; align-items: center; min-height: 44px; }
+.icon-btn { width: 44px; height: 44px; display: grid; place-items: center; color: var(--primary-text); }
+.icon-circle { position: relative; width: 32px; height: 32px; border-radius: 16px; background: var(--fill); display: grid; place-items: center; }
+.icon-circle svg { width: 17px; height: 17px; }
+/* 상세·리포트·보관함: 왼쪽 뒤로, 가운데 제목, 오른쪽 버튼 */
+.top.sub { display: grid; grid-template-columns: 1fr auto 1fr; padding-left: 6px; }
+.top.sub h1 { margin: 0; font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; max-width: 220px; }
+.top.sub h1 span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.text-btn { justify-self: end; height: 44px; padding: 0 10px; font-size: 15px; color: var(--primary-text); }
+
+/* ---------- 이번 주 ---------- */
+.week { background: var(--card); margin: 4px 16px 0; border-radius: 14px; padding: 8px 6px 6px; display: grid; grid-template-columns: repeat(7, 1fr); }
+.wd { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 58px; }
+.wd .lab { font-size: 13px; font-weight: 500; color: var(--sub); }
+.wd .lab.sun { color: var(--c-red); }
+.wd .n { width: 30px; height: 30px; border-radius: 15px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.wd.today .n { color: var(--primary-text); font-weight: 600; }
+.wd.sel .n { background: var(--primary); color: var(--on-primary); font-weight: 600; }
+.wd:disabled { opacity: .35; }
+
+/* ---------- 습관 목록 ---------- */
+.day-head { display: flex; align-items: baseline; justify-content: space-between; padding: 18px 20px 8px; }
+.day-head h2 { margin: 0; font-size: 17px; font-weight: 700; }
+.day-head span { font-size: 14px; color: var(--sub); font-variant-numeric: tabular-nums; }
+.list { background: var(--card); margin: 0 16px; border-radius: 14px; overflow: hidden; }
+.list.more { margin-top: 14px; }
+.empty { text-align: center; color: var(--sub); padding: 28px 16px 8px; font-size: 14px; }
+.habit { display: flex; align-items: center; min-height: 46px; padding-right: 3px; background: var(--card); }
+.habit + .habit { border-top: 0.5px solid var(--line); }
+/* 이름 쪽은 상세로 (꾹 누르면 순서 바꾸기), 오른쪽 동그라미만 체크 */
+.h-open {
+  flex: 1; min-width: 0; align-self: stretch; display: flex; align-items: center; padding-left: 16px; text-align: left;
+  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; transition: background-color .15s;
+}
+.h-open:active { background: var(--fill); }
+.h-dot { flex: none; width: 8px; height: 8px; border-radius: 4px; margin-right: 10px; }
+.h-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.h-meta { flex: none; font-size: 13px; color: var(--sub); font-variant-numeric: tabular-nums; margin-left: 8px; }
+.check-btn { flex: none; width: 44px; height: 44px; display: grid; place-items: center; }
+.check {
+  width: 22px; height: 22px; border-radius: 11px; border: 2px solid var(--line);
+  display: grid; place-items: center; transition: background-color .15s, border-color .15s;
+}
+.check svg { width: 13px; height: 13px; stroke-width: 3.2; color: var(--on-habit); opacity: 0; }
+.habit.done .check { background: var(--hc); border-color: var(--hc); }
+.habit.done .check svg { opacity: 1; }
+/* 라이트의 밝은 노랑 위에는 검은 체크 (흰 체크는 안 보임) */
+:root:not([data-theme="dark"]) .habit[data-c="brown"] .check svg { color: #000000; }
+.habit.dragging { position: relative; z-index: 1; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); }
+.habit.dragging .h-open { background: var(--fill); }
+.add-row, .arch-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; padding: 0 16px; text-align: left; }
+.add-row { color: var(--primary-text); gap: 8px; }
+.list .habit + .add-row { border-top: 0.5px solid var(--line); }
+.add-row svg { width: 18px; height: 18px; }
+.arch-row { padding-right: 12px; }
+.arch-row + .arch-row { border-top: 0.5px solid var(--line); }
+.arch-row > svg { flex: none; width: 16px; height: 16px; color: var(--sub); stroke-width: 2.4; }
+.arch-row .ic { width: 18px; height: 18px; color: var(--sub); }
+.arch-row .ic svg { width: 18px; height: 18px; }
+.arch-row .h-meta { margin-left: auto; }
+.note { margin: 0; padding: 4px 20px 10px; font-size: 13px; color: var(--sub); }
+
+/* 체크했을 때: 동그라미가 살짝 커졌다 돌아오고, 체크 표시가 그려짐 (풀 때는 움직이지 않음) */
+.check.pop { animation: pop .34s cubic-bezier(.3, 1.6, .5, 1); }
+.check.pop svg path { stroke-dasharray: 22; animation: draw .26s ease-out .06s both; }
+.cd.pop .n { animation: pop .34s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.22); } 100% { transform: scale(1); } }
+@keyframes draw { from { stroke-dashoffset: 22; } to { stroke-dashoffset: 0; } }
+
+/* ---------- 달력 (습관 상세) ---------- */
+.cal { background: var(--card); margin: 4px 16px 0; border-radius: 14px; padding: 4px 6px 8px; }
+.cal-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+.cal-nav { grid-column: 2; display: flex; align-items: center; }
+.month { margin: 0; min-width: 104px; text-align: center; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.nav-btn { width: 44px; height: 44px; display: grid; place-items: center; color: var(--sub); }
+.nav-btn:disabled { opacity: .3; }
+.nav-btn svg { width: 17px; height: 17px; stroke-width: 2.4; }
+.today-btn { grid-column: 3; justify-self: end; height: 44px; padding: 0 10px; font-size: 14px; color: var(--primary-text); }
+.cal-labels, .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.cal-labels { text-align: center; font-size: 13px; font-weight: 500; line-height: 18px; color: var(--sub); padding-bottom: 2px; }
+.cal-labels .sun, .wk-row.head .sun { color: var(--c-red); }
+.cal-grid { grid-auto-rows: 44px; }
+.cd { display: grid; place-items: center; }
+.cd .n { width: 34px; height: 34px; border-radius: 17px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+/* 체크한 날: 테두리 없이 연한 습관 색 */
+.cd.done .n { background: color-mix(in srgb, var(--hc) 16%, transparent); font-weight: 600; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cd.done .n { background: color-mix(in srgb, var(--hc) 30%, transparent); } }
+:root[data-theme="dark"] .cd.done .n { background: color-mix(in srgb, var(--hc) 30%, transparent); }
+.cd.today .n { color: var(--primary-text); font-weight: 600; }
+.cd:disabled { color: var(--sub); opacity: .45; }
+
+/* ---------- 숫자 (습관 상세) ---------- */
+.sec-title { margin: 0; padding: 18px 20px 8px; font-size: 17px; font-weight: 700; }
+.stats { background: var(--card); margin: 0 16px; border-radius: 14px; padding: 12px 0; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
+.stat { padding: 0 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.stat + .stat { border-left: 0.5px solid var(--line); }
+.stat span { font-size: 13px; color: var(--sub); }
+.stat b { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat b small { font-size: 14px; font-weight: 500; color: var(--sub); margin-left: 2px; }
+.total { background: var(--card); margin: 0 16px; border-radius: 14px; min-height: 46px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.total b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.total span { font-size: 13px; color: var(--sub); }
+
+/* 월별 달성률 (1~12월, 연도 넘기기) */
+.yc { background: var(--card); margin: 0 16px; border-radius: 14px; padding: 4px 14px 12px; }
+.yc .cal-head { margin: 0 -8px; }
+.yc-sum { text-align: center; font-size: 13px; color: var(--sub); padding-bottom: 14px; font-variant-numeric: tabular-nums; }
+.yc-plot { position: relative; height: 120px; margin-left: 32px; display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: 120px; gap: 5px; align-items: end; }
+.yc-line { position: absolute; left: 0; right: 0; border-top: 0.5px solid var(--line); }
+.yc-line span { position: absolute; left: -32px; width: 28px; text-align: right; transform: translateY(-50%); font-size: 11px; font-style: normal; color: var(--sub); font-variant-numeric: tabular-nums; }
+.yc-bar { position: relative; background: var(--hc); border-radius: 3px 3px 0 0; min-height: 2px; }
+.yc-bar.now { background: color-mix(in srgb, var(--hc) 55%, transparent); }
+.yc-labels { margin-left: 32px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; padding-top: 4px; }
+.yc-labels span { text-align: center; font-size: 11px; color: var(--sub); font-variant-numeric: tabular-nums; }
+
+/* ---------- 리포트 ---------- */
+.seg.tabs { margin: 4px 16px 0; }
+.rp-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin: 6px 10px 4px; }
+.rp-head .month { min-width: 150px; }
+.cell { background: var(--fill); }
+.cell.on { background: var(--hc); }
+.cell.fut { background: transparent; box-shadow: inset 0 0 0 1px var(--fill); }
+.cell.out { visibility: hidden; }
+.pct { text-align: right; font-size: 13px; color: var(--sub); font-variant-numeric: tabular-nums; }
+
+.wk { background: var(--card); margin: 0 16px; border-radius: 14px; padding: 4px 0; }
+.wk-row { display: grid; grid-template-columns: minmax(0, 1fr) repeat(7, 26px) 44px; align-items: center; min-height: 40px; padding: 0 12px 0 14px; }
+.wk-row + .wk-row { border-top: 0.5px solid var(--line); }
+.wk-row.head { min-height: 28px; font-size: 12px; font-weight: 500; color: var(--sub); text-align: center; }
+.wk-name { display: flex; align-items: center; min-width: 0; font-size: 14px; }
+.wk-name span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wk-name .h-dot { margin-right: 7px; }
+.wk .cell { width: 16px; height: 16px; border-radius: 8px; justify-self: center; }
+
+.mg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 16px; }
+.mc { background: var(--card); border-radius: 14px; padding: 10px 10px 12px; min-width: 0; }
+.mc-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 14px; font-weight: 600; min-width: 0; }
+.mc-head .h-dot { margin-right: 0; }
+.mc-head span:not(.pct) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mc-head .pct { margin-left: auto; font-weight: 400; flex: none; }
+.mc-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.mc-grid .cell { aspect-ratio: 1; border-radius: 4px; }
+
+.yl { background: var(--card); margin: 0 16px; border-radius: 14px; }
+.yi { padding: 10px 14px 12px; }
+.yi + .yi { border-top: 0.5px solid var(--line); }
+.yi .mc-head { margin-bottom: 7px; }
+.yg { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, auto); gap: 1.5px; }
+.yg .cell { aspect-ratio: 1; border-radius: 1.5px; }
+.yg .cell.fut { box-shadow: none; background: color-mix(in srgb, var(--fill) 45%, transparent); }
+.ym { display: grid; font-size: 10px; color: var(--sub); margin-top: 4px; }
+
+/* ---------- 아래에서 올라오는 창 (AIN Cost와 같음) ---------- */
+body.locked { overflow: hidden; }
+.overlay {
+  position: fixed; inset: 0; z-index: 30;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0; transition: opacity .25s;
+}
+.overlay.show { opacity: 1; }
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: var(--kb, 0px);
+  max-width: 480px; margin: 0 auto;
+  max-height: calc(100% - var(--kb, 0px) - 40px - env(safe-area-inset-top, 0px));
+  display: flex; flex-direction: column;
+  background: var(--bg); border-radius: 14px 14px 0 0;
+  transform: translateY(100%); transition: transform .3s ease;
+}
+.sheet.tall { height: calc(100% - var(--kb, 0px) - 40px - env(safe-area-inset-top, 0px)); }
+.overlay.show .sheet { transform: none; }
+.sheet-top { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 6px 8px; }
+.sheet-top h2 { margin: 0; font-size: 17px; font-weight: 700; }
+.sheet-btn { height: 44px; padding: 0 8px; font-size: 16px; color: var(--primary-text); justify-self: start; }
+.sheet-btn.strong { font-weight: 700; justify-self: end; }
+.sheet-btn:disabled { color: var(--sub); }
+.sheet-scroll {
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 4px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+}
+.sheet-scroll > *, #fEditOnly > * { flex-shrink: 0; }
+#fEditOnly { display: flex; flex-direction: column; gap: 14px; }
+
+.group { background: var(--card); border-radius: 12px; overflow: hidden; }
+.group-label { font-size: 13px; color: var(--sub); padding: 0 4px; margin-bottom: -8px; }
+.hint { margin: -6px 4px 0; font-size: 13px; color: var(--sub); }
+.f-title { display: block; width: 100%; border: 0; outline: none; background: none; font: inherit; font-size: 16px; color: var(--fg); padding: 12px 14px; }
+.f-title::placeholder { color: var(--sub); }
+.f-error { margin: -6px 4px 0; font-size: 13px; color: var(--c-red); }
+.color-dots { display: grid; grid-template-columns: repeat(8, 1fr); padding: 6px 4px; }
+.color-dot { height: 44px; display: grid; place-items: center; }
+.color-dot i { width: 24px; height: 24px; border-radius: 12px; }
+.color-dot.on i { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--fg); }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 6px 14px; font-size: 15px; width: 100%; }
+.row-value { min-width: 0; color: var(--sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row + .row { border-top: 0.5px solid var(--line); }
+.row.danger { justify-content: center; color: var(--c-red); font-size: 16px; }
+.row.link { justify-content: center; color: var(--primary-text); font-size: 16px; }
+
+/* 선택 버튼 묶음 */
+.seg { display: flex; background: var(--fill); border-radius: 9px; padding: 2px; }
+.seg button { height: 32px; padding: 0 10px; border-radius: 7px; font-size: 14px; }
+.seg button.on { background: var(--seg-active); font-weight: 600; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+.seg.wide button { flex: 1; }
+.seg.grow { flex: 1; }
+.seg .sw { display: inline-block; width: 10px; height: 10px; border-radius: 5px; margin-right: 6px; vertical-align: 0; }
+
+/* ---------- 로그인 화면 ---------- */
+.login {
+  position: fixed; inset: 0; z-index: 35;
+  background: var(--bg);
+  display: grid; place-items: center;
+  padding: env(safe-area-inset-top, 0px) 24px env(safe-area-inset-bottom, 0px);
+}
+.login-box { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.wordmark.big { font-size: 32px; }
+.login-sub { margin: 0 0 20px; font-size: 15px; color: var(--sub); }
+.login-error { margin: 4px 0 0; text-align: center; }
+.add-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; height: 50px; border-radius: 12px; background: var(--primary); color: var(--on-primary);
+  font-size: 16px; font-weight: 600;
+}
+
+/* ---------- 선택 창 ---------- */
+.overlay#actionOverlay { z-index: 40; }
+.action-sheet {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  max-width: 480px; margin: 0 auto;
+  padding: 0 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; gap: 8px;
+  transform: translateY(100%); transition: transform .25s ease;
+}
+.overlay.show .action-sheet { transform: none; }
+.action-group, .action-cancel { background: var(--card); border-radius: 14px; overflow: hidden; }
+.action-msg { margin: 0; padding: 14px 16px; text-align: center; font-size: 13px; color: var(--sub); }
+.action-msg:empty { display: none; }
+.action-btn, .action-cancel { display: block; width: 100%; height: 56px; font-size: 17px; color: var(--primary-text); }
+.action-btn { border-top: 0.5px solid var(--line); }
+.action-msg:empty + div .action-btn:first-child { border-top: 0; }
+.action-btn.danger { color: var(--c-red); }
+.action-cancel { font-weight: 600; }
+
+/* ---------- 시작 화면 (스플래시) — 세 앱 공통 순서 ----------
+   1. 파란 원이 작게 시작해서 부드럽게 펼쳐짐 (튕기지 않음) 0 ~ 0.6초
+   2. 원 안 그림 (앱마다 다름: Todo 체크, Cost ₩, Days 점 9개) 0.5 ~ 1.0초
+   3. 이름 1.0초, 4. 색 점 3개 1.3 ~ 1.5초. 크기·간격은 원 46, 이름 24, 점 8, 간격 18·16 */
+.splash {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-items: center;
+  background: var(--splash-bg);
+  transition: opacity .35s ease;
+}
+.splash.hide { opacity: 0; pointer-events: none; }
+/* 첫 화면을 그릴 때까지는 멈춰 있다가, main.js가 .go를 붙이면 움직임 (로딩 중에 움직이면 아이폰에서 끊겨 보임) */
+.splash:not(.go) .splash-bg, .splash:not(.go) .splash-draw, .splash:not(.go) .splash-stamp,
+.splash:not(.go) .splash-word, .splash:not(.go) .splash-dots i { animation-play-state: paused; }
+.splash-mark { display: flex; flex-direction: column; align-items: center; }
+.splash-disc { width: 46px; height: 46px; margin-bottom: 18px; }
+.splash-disc svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.splash-bg { fill: var(--primary); transform-box: fill-box; transform-origin: center; animation: splash-spread .6s cubic-bezier(.22, .8, .3, 1) both; }
+.splash-draw { fill: none; stroke: #FFFFFF; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 100; stroke-dashoffset: 100; animation: splash-draw var(--d, .4s) ease-in-out var(--at, .55s) forwards; }
+.splash-stamp { fill: #FFFFFF; transform-box: fill-box; transform-origin: center; animation: splash-dot .3s cubic-bezier(.3, 1.5, .5, 1) both; }
+.splash-word { font-size: 24px; line-height: 1; margin: 0 0 16px; animation: splash-up .5s ease-out 1s both; }
+.splash-dots { display: flex; gap: 7px; }
+.splash-dots i { width: 8px; height: 8px; border-radius: 4px; animation: splash-dot .3s cubic-bezier(.3, 1.6, .5, 1) both; }
+/* 색 점은 세 테마 색 (테마와 상관없이 항상 같음) */
+.splash-dots i:nth-child(1) { background: #0071E3; animation-delay: 1.3s; }
+.splash-dots i:nth-child(2) { background: #00B74F; animation-delay: 1.4s; }
+.splash-dots i:nth-child(3) { background: #D31E3D; animation-delay: 1.5s; }
+@keyframes splash-spread { from { transform: scale(.55); opacity: 0; } 40% { opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes splash-draw { to { stroke-dashoffset: 0; } }
+@keyframes splash-dot { from { transform: scale(0); } to { transform: none; } }
+@keyframes splash-up { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-bg, .splash-stamp, .splash-word, .splash-dots i { animation: none; }
+  .splash-draw { animation: none; stroke-dashoffset: 0; }
+  .check, .h-open, .overlay, .sheet, .action-sheet { transition: none; }
+  .check.pop, .check.pop svg path, .cd.pop .n { animation: none; }
+}

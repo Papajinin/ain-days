@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- 홈 화면 앱: 상태 표시줄을 화면과 겹치지 않게 따로 두고, 아이콘 이름은 AIN Days -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="AIN Days">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png">
+  <title>AIN Days</title>
+  <script>
+    // 저장된 화면 모드와 테마 색을 먼저 적용해서 색이 깜빡이지 않게
+    try {
+      const s = JSON.parse(localStorage.getItem('ainDays')).settings;
+      if (s.theme === 'light' || s.theme === 'dark') document.documentElement.setAttribute('data-theme', s.theme);
+      if (s.accent === 'green' || s.accent === 'red') document.documentElement.setAttribute('data-accent', s.accent);
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+  <!-- 시작 화면 (앱을 새로 열 때만, 약 2초): 파란 원이 펼쳐지고 → 점 9개가 하루씩 찍힘 → 이름 → 색 점 3개 (세 앱 공통 순서) -->
+  <div class="splash" id="splash" aria-hidden="true">
+    <div class="splash-mark">
+      <div class="splash-disc">
+        <svg viewBox="0 0 64 64"><circle class="splash-bg" cx="32" cy="32" r="32"/><circle class="splash-stamp" cx="20" cy="20" r="4.4" style="animation-delay:0.50s"/><circle class="splash-stamp" cx="32" cy="20" r="4.4" style="animation-delay:0.56s"/><circle class="splash-stamp" cx="44" cy="20" r="4.4" style="animation-delay:0.62s"/><circle class="splash-stamp" cx="20" cy="32" r="4.4" style="animation-delay:0.68s"/><circle class="splash-stamp" cx="32" cy="32" r="4.4" style="animation-delay:0.74s"/><circle class="splash-stamp" cx="44" cy="32" r="4.4" style="animation-delay:0.80s"/><circle class="splash-stamp" cx="20" cy="44" r="4.4" style="animation-delay:0.86s"/><circle class="splash-stamp" cx="32" cy="44" r="4.4" style="animation-delay:0.92s"/><circle class="splash-stamp" cx="44" cy="44" r="4.4" style="animation-delay:0.98s"/></svg>
+      </div>
+      <div class="wordmark splash-word"><b>AIN</b> Days</div>
+      <div class="splash-dots"><i></i><i></i><i></i></div>
+    </div>
+  </div>
+
+  <!-- 화면 (오늘 / 습관 상세 / 리포트 / 보관함): 그때그때 그림 -->
+  <div class="app" id="app"></div>
+
+  <!-- 습관 추가·편집 창 -->
+  <div class="overlay" id="habitOverlay" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="habitTitle">
+      <div class="sheet-top">
+        <button class="sheet-btn" id="habitCancel" type="button">취소</button>
+        <h2 id="habitTitle">새 습관</h2>
+        <button class="sheet-btn strong" id="habitSave" type="button">추가</button>
+      </div>
+      <div class="sheet-scroll">
+        <div class="group"><input class="f-title" id="fName" type="text" maxlength="30" placeholder="습관 이름 (예: 운동, 책 읽기)" enterkeyhint="done" autocomplete="off" aria-label="습관 이름"></div>
+        <div class="group-label">색</div>
+        <div class="group"><div class="color-dots" id="fColors"></div></div>
+        <div id="fEditOnly">
+          <div class="group"><div class="row"><span>시작한 날</span><span class="row-value num" id="fStart"></span></div></div>
+          <div class="group"><button class="row link" id="fArchive" type="button">보관하기</button></div>
+          <p class="hint" id="fArchiveNote"></p>
+          <div class="group"><button class="row danger" id="fDelete" type="button">습관 삭제</button></div>
+          <p class="hint">삭제하면 이 습관의 체크 기록도 모두 지워져요.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 설정 창 -->
+  <div class="overlay" id="settingsOverlay" hidden>
+    <div class="sheet tall" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="sheet-top">
+        <span></span>
+        <h2 id="settingsTitle">설정</h2>
+        <button class="sheet-btn strong" id="settingsClose" type="button">완료</button>
+      </div>
+      <div class="sheet-scroll">
+        <div class="group-label">화면 모드</div>
+        <div class="group"><div class="row"><div class="seg wide grow" id="sTheme">
+          <button type="button" data-v="light">라이트</button>
+          <button type="button" data-v="dark">다크</button>
+          <button type="button" data-v="auto">자동</button>
+        </div></div></div>
+
+        <div class="group-label">테마 색</div>
+        <div class="group"><div class="row"><div class="seg wide grow" id="sAccent">
+          <button type="button" data-v="blue"><i class="sw" style="background:#0071E3"></i>블루</button>
+          <button type="button" data-v="green"><i class="sw" style="background:#00B74F"></i>그린</button>
+          <button type="button" data-v="red"><i class="sw" style="background:#D31E3D"></i>레드</button>
+        </div></div></div>
+        <p class="hint">버튼과 강조 색이 바뀌어요. 이 계정의 모든 기기에 같이 적용돼요.</p>
+
+        <div class="group-label">한 주의 시작</div>
+        <div class="group"><div class="row"><div class="seg wide grow" id="sWeek">
+          <button type="button" data-v="0">일요일</button>
+          <button type="button" data-v="1">월요일</button>
+        </div></div></div>
+        <p class="hint">이번 주 날짜 줄, 달력, 주간 리포트, 이번 주 달성률에 함께 적용돼요.</p>
+
+        <div id="sAccount">
+          <div class="group-label">계정</div>
+          <div class="group">
+            <div class="row"><span>로그인</span><span class="row-value" id="accountEmail"></span></div>
+            <button class="row danger" id="logoutBtn" type="button">로그아웃</button>
+          </div>
+        </div>
+        <p class="hint" id="localNote" hidden>아직 클라우드에 연결하기 전이라 기록이 이 기기에만 저장돼요.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로그인 화면 -->
+  <div class="login" id="login" hidden>
+    <div class="login-box">
+      <h1 class="wordmark big"><b>AIN</b> Days</h1>
+      <p class="login-sub">가족 계정으로 로그인해 주세요</p>
+      <button class="add-btn" id="loginBtn" type="button">Google로 로그인</button>
+      <p class="f-error login-error" id="loginError" hidden></p>
+    </div>
+  </div>
+
+  <!-- 선택 창 (삭제·로그아웃 확인) -->
+  <div class="overlay" id="actionOverlay" hidden>
+    <div class="action-sheet">
+      <div class="action-group">
+        <p class="action-msg" id="actionMsg"></p>
+        <div id="actionBtns"></div>
+      </div>
+      <button class="action-cancel" id="actionCancel" type="button">취소</button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="app.js?v=1"></script>
+  <script src="home.js?v=1"></script>
+  <script src="detail.js?v=1"></script>
+  <script src="report.js?v=1"></script>
+  <script src="sheet.js?v=1"></script>
+  <script src="settings.js?v=1"></script>
+  <script src="sync.js?v=1"></script>
+  <script src="main.js?v=1"></script>
+</body>
+</html>
