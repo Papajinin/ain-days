@@ -1,4 +1,4 @@
-// AIN Days 클라우드 v1: 구글 로그인 + 실시간 동기화 (Firebase Auth + Firestore) — AIN Cost와 같은 방식
+// AIN Days 클라우드 v2: 구글 로그인 + 실시간 동기화 (Firebase Auth + Firestore) — AIN Cost와 같은 방식
 //  - 클라우드 위치: users/{uid} 문서(설정) + users/{uid}/habits/{습관 id} 문서 하나씩 (이름, 색, 시작한 날, 보관, 순서, 체크한 날)
 //  - 습관을 하나씩 따로 저장해서, 폰과 PC에서 서로 다른 습관을 체크해도 덮어쓰지 않음
 //  - 다른 기기에서 바꾸면 onSnapshot으로 바로 받아서 화면을 다시 그림
@@ -8,12 +8,12 @@
 
 // Firebase 관리 화면 → 프로젝트 설정 → 내 앱(웹)에서 복사해 넣는 값
 const FIREBASE_CONFIG = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: ''
+  apiKey: 'AIzaSyD_15y8Fj7TAgp7Dn6dRyTKtdA6gva7YpU',
+  authDomain: 'ain-days.firebaseapp.com',
+  projectId: 'ain-days',
+  storageBucket: 'ain-days.firebasestorage.app',
+  messagingSenderId: '492895481982',
+  appId: '1:492895481982:web:5190f6253249993846a82f'
 };
 
 const UID_KEY = 'ainDays.uid';          // 이 기기에 마지막으로 로그인한 사람
