@@ -1,4 +1,4 @@
-// AIN Days 습관 추가·편집 창 v3 (이름, 색, 보관, 삭제) + 선택 창(삭제·로그아웃 확인)
+// AIN Days 습관 추가·편집 창 v4 (이름, 색, 보관, 삭제) + 선택 창(삭제·로그아웃 확인)
 
 const habitOverlay = document.getElementById('habitOverlay');
 const fName = document.getElementById('fName');
@@ -32,17 +32,26 @@ function openHabitSheet(id) {
   updateSaveBtn();
   showOverlay(habitOverlay);
   // 아이폰은 누르는 순간에 커서를 넣어야 키보드를 열어 줌 (조금 뒤에 넣으면 무시됨)
-  if (!h) { fName.focus(); settleCaret(fName); }
+  if (!h) { fName.focus({ preventScroll: true }); settleCaret(fName); }
 }
 
 // 아이폰 Safari: 올라오는 중인 칸에 커서를 넣으면 깜빡이는 커서가 처음 자리(창 뒤)에 남을 때가 있어서,
 // 창이 다 올라온 뒤 커서 위치를 한 번 더 잡아 줌 (키보드는 누르는 순간 넣어야 열리므로 그때 한 번, 지금 한 번)
+// 처음 열 때 아이폰이 키보드를 띄우며 화면 전체를 밀어 버리면, 키보드가 다 올라온 뒤 원래 보던 위치로 되돌림
+let caretHold = null; // { el, y }
 function settleCaret(el) {
+  caretHold = { el, y: window.scrollY };
   setTimeout(() => {
     if (document.activeElement !== el) return;
     const n = el.value.length;
     try { el.setSelectionRange(n, n); } catch (e) {}
+    holdScroll();
   }, 320);
+  setTimeout(() => { if (caretHold && caretHold.el === el) caretHold = null; }, 1000);
+}
+function holdScroll() {
+  if (!caretHold || document.activeElement !== caretHold.el) return;
+  if (window.scrollY !== caretHold.y) window.scrollTo(window.scrollX, caretHold.y);
 }
 
 function renderColors() {
@@ -117,6 +126,7 @@ if (window.visualViewport) {
   const fit = () => {
     const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
     document.documentElement.style.setProperty('--kb', kb + 'px');
+    holdScroll();
   };
   vv.addEventListener('resize', fit);
   vv.addEventListener('scroll', fit);
