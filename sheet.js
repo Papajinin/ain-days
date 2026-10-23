@@ -1,4 +1,4 @@
-// AIN Days 습관 추가·편집 창 v2 (이름, 색, 보관, 삭제) + 선택 창(삭제·로그아웃 확인)
+// AIN Days 습관 추가·편집 창 v3 (이름, 색, 보관, 삭제) + 선택 창(삭제·로그아웃 확인)
 
 const habitOverlay = document.getElementById('habitOverlay');
 const fName = document.getElementById('fName');
@@ -110,6 +110,17 @@ document.getElementById('habitCancel').addEventListener('click', closeHabitSheet
 fArchive.addEventListener('click', toggleArchive);
 document.getElementById('fDelete').addEventListener('click', askDelete);
 habitOverlay.addEventListener('click', e => { if (e.target === habitOverlay) closeHabitSheet(); });
+
+// 아이폰 키보드가 올라오면 입력 창도 키보드 위로 올림 (AIN Todo·Cost와 같음)
+if (window.visualViewport) {
+  const vv = window.visualViewport;
+  const fit = () => {
+    const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    document.documentElement.style.setProperty('--kb', kb + 'px');
+  };
+  vv.addEventListener('resize', fit);
+  vv.addEventListener('scroll', fit);
+}
 
 // ---------- 선택 창 (AIN Cost와 같음) ----------
 const actionOverlay = document.getElementById('actionOverlay');

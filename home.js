@@ -1,4 +1,4 @@
-// AIN Days 오늘 화면 v2: 이번 주 날짜 줄, 습관 목록(체크·연속), 꾹 눌러 끌어서 순서 바꾸기
+// AIN Days 오늘 화면 v3: 이번 주 날짜 줄, 습관 목록(체크·연속), 꾹 눌러 끌어서 순서 바꾸기
 
 function homeHtml() {
   const today = parseYmd(ui.today);
@@ -80,8 +80,8 @@ document.addEventListener('pointermove', e => {
   }
   const { rows, from, tops, hs } = drag;
   const last = rows.length - 1;
-  // 목록 맨 위·맨 아래 밖으로는 못 나가게
-  const dy = Math.max(tops[0] - tops[from], Math.min(tops[last] - tops[from], e.clientY - drag.y));
+  // 목록 맨 위·맨 아래 밖으로는 못 나가게 (끝에 닿으면 끝 줄과 자리를 바꿀 수 있게 조금 여유를 둠)
+  const dy = Math.max(tops[0] - tops[from] - 4, Math.min(tops[last] + hs[last] - hs[from] - tops[from] + 4, e.clientY - drag.y));
   drag.row.style.transform = `translateY(${dy}px)`;
   // 잡은 줄의 가운데가 다른 줄의 가운데를 넘으면 그 줄이 비켜 줌
   const mid = tops[from] + hs[from] / 2 + dy;
@@ -90,8 +90,8 @@ document.addEventListener('pointermove', e => {
     if (k === from) return;
     const m = tops[k] + hs[k] / 2;
     let shift = 0;
-    if (k < from && mid < m) { shift = hs[from]; to--; }
-    if (k > from && mid > m) { shift = -hs[from]; to++; }
+    if (k < from && mid <= m) { shift = hs[from]; to--; }
+    if (k > from && mid >= m) { shift = -hs[from]; to++; }
     r.style.transform = shift ? `translateY(${shift}px)` : '';
   });
   drag.to = to;
