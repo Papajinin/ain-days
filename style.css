@@ -1,4 +1,4 @@
-/* AIN Days 스타일 v2 — 색·크기는 ../ain-todo/plan/design-guide.md(공통 디자인 가이드)를 따른다. 기본 틀은 AIN Cost와 같음 */
+/* AIN Days 스타일 v3 — 색·크기는 ../ain-todo/plan/design-guide.md(공통 디자인 가이드)를 따른다. 기본 틀은 AIN Cost와 같음 */
 
 :root {
   --bg: #F2F2F7;
@@ -24,6 +24,9 @@
   --c-brown: #E5B800; /* brown 이름표 = 노랑 (예전 기록과 호환). 라이트 초록·노랑은 사용자가 밝게 고른 색 (가이드 예외) */
 
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", sans-serif;
+  --ease: cubic-bezier(.22, .61, .36, 1); /* 움직임: 처음엔 빠르게, 끝에서 천천히 멈춤 (네 앱 공통) */
+  --t: .35s; /* 이 앱의 모든 움직임 속도 */
+  --t-press: .1s; /* 누르는 순간만 바로 반응 */
   color-scheme: light;
 }
 
@@ -155,9 +158,9 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 /* 이름 쪽은 상세로 (꾹 누르면 순서 바꾸기), 오른쪽 동그라미만 체크 */
 .h-open {
   flex: 1; min-width: 0; align-self: stretch; display: flex; align-items: center; padding-left: 16px; text-align: left;
-  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; transition: background-color .15s;
+  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; transition: background-color var(--t) var(--ease);
 }
-.h-open:active { background: var(--fill); }
+.h-open:active { background: var(--fill); transition-duration: var(--t-press); }
 .h-dot { flex: none; width: 8px; height: 8px; border-radius: 4px; margin-right: 10px; }
 .h-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .h-meta { flex: none; font-size: 13px; color: var(--sub); font-variant-numeric: tabular-nums; margin-left: 8px; }
@@ -174,7 +177,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 .habit.dragging { position: relative; z-index: 1; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); }
 .habit.dragging .h-open { background: var(--fill); }
 /* 끄는 동안: 다른 줄은 미끄러지듯 비켜 주고, 손을 떼면 잡은 줄이 제자리에 내려앉음 */
-.list.sorting .habit:not(.dragging), .habit.dragging.settle { transition: transform .2s ease; }
+.list.sorting .habit:not(.dragging), .habit.dragging.settle { transition: transform var(--t) var(--ease); }
 .add-row, .arch-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; padding: 0 16px; text-align: left; }
 .add-row { color: var(--primary-text); gap: 8px; }
 .list .habit + .add-row { border-top: 0.5px solid var(--line); }
@@ -282,7 +285,7 @@ body.locked { overflow: hidden; }
 .overlay {
   position: fixed; inset: 0; z-index: 30;
   background: rgba(0, 0, 0, 0.4);
-  opacity: 0; transition: opacity .25s;
+  opacity: 0; transition: opacity var(--t) var(--ease);
 }
 .overlay.show { opacity: 1; }
 .sheet {
@@ -291,7 +294,7 @@ body.locked { overflow: hidden; }
   max-height: calc(100% - var(--kb, 0px) - 40px - env(safe-area-inset-top, 0px));
   display: flex; flex-direction: column;
   background: var(--bg); border-radius: 14px 14px 0 0;
-  transform: translateY(100%); transition: transform .3s ease;
+  transform: translateY(100%); transition: transform var(--t) var(--ease);
 }
 .sheet.tall { height: calc(100% - var(--kb, 0px) - 40px - env(safe-area-inset-top, 0px)); }
 .overlay.show .sheet { transform: none; }
@@ -356,7 +359,7 @@ body.locked { overflow: hidden; }
   max-width: 480px; margin: 0 auto;
   padding: 0 8px calc(8px + env(safe-area-inset-bottom, 0px));
   display: flex; flex-direction: column; gap: 8px;
-  transform: translateY(100%); transition: transform .25s ease;
+  transform: translateY(100%); transition: transform var(--t) var(--ease);
 }
 .overlay.show .action-sheet { transform: none; }
 .action-group, .action-cancel { background: var(--card); border-radius: 14px; overflow: hidden; }
@@ -406,4 +409,23 @@ body.locked { overflow: hidden; }
   .splash-draw { animation: none; stroke-dashoffset: 0; }
   .check, .h-open, .overlay, .sheet, .action-sheet { transition: none; }
   .check.pop, .check.pop svg path, .cd.pop .n { animation: none; }
+  .habit { transition: none !important; }
+}
+
+/* ---------- 움직임 (Line·Todo·Cost·Days 공통 방식) ----------
+   앱 안의 움직임은 모두 --t 한 가지 속도. 누르는 순간만 --t-press로 바로, 손을 떼면 --t로 천천히 돌아옴
+   따로 두는 것: 체크할 때 통 튀기, 시작 화면, 손가락으로 밀어 넘기기 */
+.icon-btn, .text-btn, .nav-btn, .today-btn, .add-btn, .sheet-btn { transition: transform var(--t) var(--ease); }
+.icon-btn:active:not(:disabled), .text-btn:active:not(:disabled), .nav-btn:active:not(:disabled), .today-btn:active:not(:disabled), .add-btn:active:not(:disabled), .sheet-btn:active:not(:disabled) { transform: scale(.95); transition-duration: var(--t-press); }
+/* 선택 버튼 묶음: 고른 칸 표시(.seg-thumb)가 옆으로 미끄러짐 — app.js의 placeSegThumb */
+.seg.has-thumb { position: relative; }
+.seg.has-thumb > button { position: relative; z-index: 1; }
+.seg.has-thumb > button.on { background: none; box-shadow: none; }
+.seg-thumb {
+  position: absolute; top: 2px; bottom: 2px; left: 0; border-radius: 7px;
+  background: var(--seg-active); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: transform var(--t) var(--ease), width var(--t) var(--ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .icon-btn, .text-btn, .nav-btn, .today-btn, .add-btn, .sheet-btn, .seg-thumb { transition: none; }
 }

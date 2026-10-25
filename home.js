@@ -1,4 +1,4 @@
-// AIN Days 오늘 화면 v3: 이번 주 날짜 줄, 습관 목록(체크·연속), 꾹 눌러 끌어서 순서 바꾸기
+// AIN Days 오늘 화면 v4: 이번 주 날짜 줄, 습관 목록(체크·연속), 꾹 눌러 끌어서 순서 바꾸기
 
 function homeHtml() {
   const today = parseYmd(ui.today);
@@ -119,7 +119,7 @@ function endDrag() {
     state.habits = [...order, ...rest];
     saveState();
     render();
-  }, 200);
+  }, 350); // 내려앉는 움직임(--t)이 끝난 뒤
 }
 document.addEventListener('pointerup', endDrag);
 document.addEventListener('pointercancel', endDrag);

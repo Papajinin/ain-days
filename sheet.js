@@ -1,4 +1,4 @@
-// AIN Days 습관 추가·편집 창 v4 (이름, 색, 보관, 삭제) + 선택 창(삭제·로그아웃 확인)
+// AIN Days 습관 추가·편집 창 v5 (이름, 색, 보관, 삭제) + 선택 창(삭제·로그아웃 확인)
 
 const habitOverlay = document.getElementById('habitOverlay');
 const fName = document.getElementById('fName');
@@ -150,7 +150,7 @@ function showActions(msg, list) {
 }
 function hideActions() {
   actionOverlay.classList.remove('show');
-  setTimeout(() => { if (!actionOverlay.classList.contains('show')) actionOverlay.hidden = true; }, 260);
+  setTimeout(() => { if (!actionOverlay.classList.contains('show')) actionOverlay.hidden = true; }, 380);
 }
 actionBtns.addEventListener('click', e => {
   const b = e.target.closest('.action-btn');
