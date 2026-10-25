@@ -1,4 +1,4 @@
-/* AIN Days 스타일 v3 — 색·크기는 ../ain-todo/plan/design-guide.md(공통 디자인 가이드)를 따른다. 기본 틀은 AIN Cost와 같음 */
+/* AIN Days 스타일 v4 — 색·크기는 ../ain-todo/plan/design-guide.md(공통 디자인 가이드)를 따른다. 기본 틀은 AIN Cost와 같음 */
 
 :root {
   --bg: #F2F2F7;
@@ -172,8 +172,6 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 .check svg { width: 13px; height: 13px; stroke-width: 3.2; color: var(--on-habit); opacity: 0; }
 .habit.done .check { background: var(--hc); border-color: var(--hc); }
 .habit.done .check svg { opacity: 1; }
-/* 라이트의 밝은 노랑 위에는 검은 체크 (흰 체크는 안 보임) */
-:root:not([data-theme="dark"]) .habit[data-c="brown"] .check svg { color: #000000; }
 .habit.dragging { position: relative; z-index: 1; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); }
 .habit.dragging .h-open { background: var(--fill); }
 /* 끄는 동안: 다른 줄은 미끄러지듯 비켜 주고, 손을 떼면 잡은 줄이 제자리에 내려앉음 */
