@@ -15,20 +15,20 @@
     try {
       const s = JSON.parse(localStorage.getItem('ainDays')).settings;
       if (s.theme === 'light' || s.theme === 'dark') document.documentElement.setAttribute('data-theme', s.theme);
-      if (s.accent === 'green' || s.accent === 'red') document.documentElement.setAttribute('data-accent', s.accent);
+      if (s.accent === 'green' || s.accent === 'red' || s.accent === 'yellow') document.documentElement.setAttribute('data-accent', s.accent);
     } catch (e) {}
   </script>
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
-  <!-- 시작 화면 (앱을 새로 열 때만, 약 2초): 파란 원이 펼쳐지고 → 점 9개가 하루씩 찍힘 → 이름 → 색 점 3개 (세 앱 공통 순서) -->
+  <!-- 시작 화면 (앱을 새로 열 때만, 약 2초): 파란 원이 펼쳐지고 → 점 9개가 하루씩 찍힘 → 이름 → 색 점 4개 (세 앱 공통 순서) -->
   <div class="splash" id="splash" aria-hidden="true">
     <div class="splash-mark">
       <div class="splash-disc">
         <svg viewBox="0 0 64 64"><circle class="splash-bg" cx="32" cy="32" r="32"/><circle class="splash-stamp" cx="20" cy="20" r="4.4" style="animation-delay:0.50s"/><circle class="splash-stamp" cx="32" cy="20" r="4.4" style="animation-delay:0.56s"/><circle class="splash-stamp" cx="44" cy="20" r="4.4" style="animation-delay:0.62s"/><circle class="splash-stamp" cx="20" cy="32" r="4.4" style="animation-delay:0.68s"/><circle class="splash-stamp" cx="32" cy="32" r="4.4" style="animation-delay:0.74s"/><circle class="splash-stamp" cx="44" cy="32" r="4.4" style="animation-delay:0.80s"/><circle class="splash-stamp" cx="20" cy="44" r="4.4" style="animation-delay:0.86s"/><circle class="splash-stamp" cx="32" cy="44" r="4.4" style="animation-delay:0.92s"/><circle class="splash-stamp" cx="44" cy="44" r="4.4" style="animation-delay:0.98s"/></svg>
       </div>
       <div class="wordmark splash-word"><b>AIN</b> Days</div>
-      <div class="splash-dots"><i></i><i></i><i></i></div>
+      <div class="splash-dots"><i></i><i></i><i></i><i></i></div>
     </div>
   </div>
 
@@ -79,6 +79,7 @@
           <button type="button" data-v="blue"><i class="sw" style="background:#0071E3"></i>블루</button>
           <button type="button" data-v="green"><i class="sw" style="background:#00B74F"></i>그린</button>
           <button type="button" data-v="red"><i class="sw" style="background:#D31E3D"></i>레드</button>
+          <button type="button" data-v="yellow"><i class="sw" style="background:#FFCC00"></i>옐로</button>
         </div></div></div>
         <p class="hint">버튼과 강조 색이 바뀌어요. 이 계정의 모든 기기에 같이 적용돼요.</p>
 
@@ -125,7 +126,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
   <script src="home.js?v=4"></script>
   <script src="detail.js?v=1"></script>
   <script src="report.js?v=1"></script>
