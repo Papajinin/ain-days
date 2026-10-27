@@ -1,4 +1,4 @@
-// AIN Days 시작 v2: 화면 고르기·그리기, 누르기 처리, 날짜 바뀜, 시작 화면, 클라우드 시작
+// AIN Days 시작 v3: 화면 고르기·그리기, 누르기 처리, 날짜 바뀜, 시작 화면, 클라우드 시작
 
 function render() {
   if (ui.view === 'detail') appEl.innerHTML = detailHtml();
@@ -43,6 +43,7 @@ appEl.addEventListener('click', e => {
   if (d.check) return checkFromHome(d.check);
   if (d.open) return openDetail(d.open);
   if (d.day) { ui.sel = d.day; return render(); }
+  if (d.today !== undefined) return goToday();
   if (d.add !== undefined) return openHabitSheet(null);
   if (d.go === 'settings') return openSettings();
   if (d.go) return go(d.go);

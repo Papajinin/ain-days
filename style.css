@@ -118,6 +118,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
   padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
+  overflow-x: clip; /* 날짜를 옆으로 밀어낼 때 화면이 옆으로 밀리지 않게 */
 }
 
 /* ---------- 헤더 ---------- */
@@ -141,7 +142,8 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 .text-btn { justify-self: end; height: 44px; padding: 0 10px; font-size: 15px; color: var(--primary-text); }
 
 /* ---------- 이번 주 ---------- */
-.week { background: var(--card); margin: 4px 16px 0; border-radius: 14px; padding: 8px 6px 6px; display: grid; grid-template-columns: repeat(7, 1fr); }
+.week { background: var(--card); margin: 4px 16px 0; border-radius: 14px; padding: 8px 6px 6px; overflow: hidden; }
+.week-row { display: grid; grid-template-columns: repeat(7, 1fr); }
 .wd { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 58px; }
 .wd .lab { font-size: 13px; font-weight: 500; color: var(--sub); }
 .wd .lab.sun { color: var(--c-red); }
@@ -154,6 +156,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 .day-head { display: flex; align-items: baseline; justify-content: space-between; padding: 18px 20px 8px; }
 .day-head h2 { margin: 0; font-size: 17px; font-weight: 700; }
 .day-head span { font-size: 14px; color: var(--sub); font-variant-numeric: tabular-nums; }
+.day-head .today-btn { height: 28px; margin: 0 auto 0 8px; } /* 지난주를 볼 때: 날짜 바로 옆 */
 .list { background: var(--card); margin: 0 16px; border-radius: 14px; overflow: hidden; }
 .list.more { margin-top: 14px; }
 .empty { text-align: center; color: var(--sub); padding: 28px 16px 8px; font-size: 14px; }
