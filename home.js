@@ -1,4 +1,4 @@
-// AIN Days 오늘 화면 v5: 주 날짜 줄(옆으로 쓸어 지난주), 습관 목록(체크·연속, 옆으로 쓸어 하루씩), 꾹 눌러 끌어서 순서 바꾸기
+// AIN Days 오늘 화면 v6: 일요일·공휴일 빨간 숫자, 날짜 제목에 공휴일 이름, 주 날짜 줄(옆으로 쓸어 지난주), 습관 목록(체크·연속, 옆으로 쓸어 하루씩), 꾹 눌러 끌어서 순서 바꾸기
 
 function homeHtml() {
   const today = parseYmd(ui.today);
@@ -8,7 +8,7 @@ function homeHtml() {
   let week = '';
   for (let i = 0; i < 7; i++) {
     const d = addDays(start, i), k = ymd(d);
-    const cls = ['wd', k === ui.today ? 'today' : '', k === ui.sel ? 'sel' : ''].join(' ');
+    const cls = ['wd', isRedDay(k) ? 'red' : '', k === ui.today ? 'today' : '', k === ui.sel ? 'sel' : ''].join(' ');
     week += `<button type="button" class="${cls}" data-day="${k}" aria-pressed="${k === ui.sel}"${d > today ? ' disabled' : ''}>` +
       `<span class="lab${d.getDay() === 0 ? ' sun' : ''}">${WEEK_NAMES[d.getDay()]}</span><span class="n">${d.getDate()}</span></button>`;
   }
@@ -37,7 +37,7 @@ function homeHtml() {
     </header>
     <div class="week"><div class="week-row">${week}</div></div>
     <div class="day-pane">
-      <div class="day-head"><h2>${sel.getMonth() + 1}월 ${sel.getDate()}일 ${WEEK_NAMES[sel.getDay()]}요일</h2>${otherWeek ? '<button type="button" class="today-btn" data-today>오늘</button>' : ''}${shown.length ? `<span>${count}/${shown.length}</span>` : ''}</div>
+      <div class="day-head"><h2>${sel.getMonth() + 1}월 ${sel.getDate()}일 ${WEEK_NAMES[sel.getDay()]}요일${holidayName(ui.sel) ? ` <em class="holiday">${holidayName(ui.sel)}</em>` : ''}</h2>${otherWeek ? '<button type="button" class="today-btn" data-today>오늘</button>' : ''}${shown.length ? `<span>${count}/${shown.length}</span>` : ''}</div>
       ${shown.length ? '' : '<p class="empty">아래 "습관 추가"로 첫 습관을 만들어 보세요.</p>'}
       <div class="list" data-list>${rows}<button type="button" class="add-row" data-add>${ICONS.plus}습관 추가</button></div>
       ${archived ? `<div class="list more"><button type="button" class="arch-row" data-go="archive"><span class="ic">${ICONS.box}</span>보관함<span class="h-meta">${archived}</span>${ICONS.next}</button></div>` : ''}

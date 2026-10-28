@@ -1,4 +1,4 @@
-// AIN Days 공통 v3: 날짜 도우미, 저장소, 상태, 숫자 계산(연속·%), 화면 모드·테마 색, 아래에서 올라오는 창
+// AIN Days 공통 v4: 날짜 도우미(공휴일 포함), 저장소, 상태, 숫자 계산(연속·%), 화면 모드·테마 색, 아래에서 올라오는 창
 
 const STORE_KEY = 'ainDays';
 const appEl = document.getElementById('app');
@@ -9,6 +9,13 @@ const COLOR_KEYS = ['blue', 'green', 'red', 'brown', 'purple', 'orange', 'teal',
 // ---------- 날짜 ('YYYY-MM-DD' 문자열) ----------
 function ymd(d) {
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+// 빨간 날: 일요일 또는 공휴일 (공휴일 목록은 AIN Todo의 holidays.js를 같이 씀)
+function holidayName(s) {
+  return (typeof HOLIDAYS !== 'undefined' && HOLIDAYS[s]) || '';
+}
+function isRedDay(s) {
+  return parseYmd(s).getDay() === 0 || !!holidayName(s);
 }
 function parseYmd(s) {
   const [y, m, d] = s.split('-').map(Number);

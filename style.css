@@ -1,4 +1,4 @@
-/* AIN Days 스타일 v7 — 색·크기는 ../ain-todo/plan/design-guide.md(공통 디자인 가이드)를 따른다. 기본 틀은 AIN Cost와 같음 */
+/* AIN Days 스타일 v8 — 색·크기는 ../ain-todo/plan/design-guide.md(공통 디자인 가이드)를 따른다. 기본 틀은 AIN Cost와 같음 */
 
 :root {
   --bg: #F2F2F7;
@@ -148,13 +148,18 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 .wd .lab { font-size: 13px; font-weight: 500; color: var(--sub); }
 .wd .lab.sun { color: var(--c-red); }
 .wd .n { width: 30px; height: 30px; border-radius: 15px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.wd.red .n { color: var(--c-red); } /* 일요일·공휴일 */
 .wd.today .n { color: var(--primary-text); font-weight: 600; }
-.wd.sel .n { background: var(--primary); color: var(--on-primary); font-weight: 600; }
+.wd.today.red .n { color: var(--c-red); }
+/* 고른 날: 연한 테마 색 동그라미 (테마 색 20%, AIN Todo와 같음), 숫자는 원래 색 */
+.wd.sel .n { background: var(--fill); background: color-mix(in srgb, var(--primary) 20%, var(--card)); color: var(--fg); font-weight: 600; }
+.wd.sel.red .n { color: var(--c-red); }
 .wd:disabled { opacity: .35; }
 
 /* ---------- 습관 목록 ---------- */
 .day-head { display: flex; align-items: baseline; justify-content: space-between; padding: 18px 20px 8px; }
 .day-head h2 { margin: 0; font-size: 17px; font-weight: 700; }
+.day-head .holiday { font-style: normal; color: var(--c-red); }
 .day-head span { font-size: 14px; color: var(--sub); font-variant-numeric: tabular-nums; }
 .day-head .today-btn { height: 28px; margin: 0 auto 0 8px; } /* 지난주를 볼 때: 날짜 바로 옆 */
 .list { background: var(--card); margin: 0 16px; border-radius: 14px; overflow: hidden; }
@@ -218,10 +223,10 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 .cd { display: grid; place-items: center; }
 .cd .n { width: 34px; height: 34px; border-radius: 17px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
 /* 체크한 날: 테두리 없이 연한 습관 색 */
-.cd.done .n { background: color-mix(in srgb, var(--hc) 16%, transparent); font-weight: 600; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cd.done .n { background: color-mix(in srgb, var(--hc) 30%, transparent); } }
-:root[data-theme="dark"] .cd.done .n { background: color-mix(in srgb, var(--hc) 30%, transparent); }
+.cd.done .n { background: color-mix(in srgb, var(--hc) 20%, transparent); font-weight: 600; } /* 라이트·다크 같게 20% (AIN Todo 고른 날과 같음) */
+.cd.red .n { color: var(--c-red); }
 .cd.today .n { color: var(--primary-text); font-weight: 600; }
+.cd.today.red .n { color: var(--c-red); }
 .cd:disabled { color: var(--sub); opacity: .45; }
 
 /* ---------- 숫자 (습관 상세) ---------- */

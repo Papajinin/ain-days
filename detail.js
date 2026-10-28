@@ -1,4 +1,4 @@
-// AIN Days 습관 상세 v1: 달력(지난달 넘기기, 날짜 눌러 체크), 연속, 달성률, 월별 달성률(1~12월), 전체 횟수
+// AIN Days 습관 상세 v2 (일요일·공휴일 빨간 숫자): 달력(지난달 넘기기, 날짜 눌러 체크), 연속, 달성률, 월별 달성률(1~12월), 전체 횟수
 
 function openDetail(id) {
   const today = parseYmd(ui.today);
@@ -22,7 +22,7 @@ function detailHtml() {
   for (let i = 0; i < weekLead(m); i++) cells += '<span></span>';
   for (let n = 1; n <= last; n++) {
     const d = new Date(m.getFullYear(), m.getMonth(), n), k = ymd(d), on = isOn(h, k);
-    const cls = ['cd', on ? 'done' : '', k === ui.today ? 'today' : '', on && ui.pop === h.id + '@' + k ? 'pop' : ''].join(' ');
+    const cls = ['cd', on ? 'done' : '', isRedDay(k) ? 'red' : '', k === ui.today ? 'today' : '', on && ui.pop === h.id + '@' + k ? 'pop' : ''].join(' ');
     cells += `<button type="button" class="${cls}" data-cd="${k}" aria-pressed="${on}"${d > today ? ' disabled' : ''}><span class="n">${n}</span></button>`;
   }
   const isThis = m.getFullYear() === today.getFullYear() && m.getMonth() === today.getMonth();
